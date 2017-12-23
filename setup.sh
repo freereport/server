@@ -15,8 +15,12 @@ sudo chmod +x ~/howmanyfailed.sh;
 
 echo $'set smooth\nset autoindent\nset tabsize 4\nset tabstospaces\nset const' > .nanorc;
 
-
 sudo echo "sudo apt update && sudo apt upgrade -y && sudo apt autoclean && sudo apt autoremove -y" > up.sh;
 sudo chmod +x ~/up.sh;
 ./up.sh;
+sudo apt install nmap netcat tmux htop acpi network-manager ffmpeg tree ranger wifite
+echo "nmtiu" > wifi
+echo "acpi" > battery
+chmod +x wifi
+chmod +x battery
 echo "Done.";
