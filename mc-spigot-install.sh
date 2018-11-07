@@ -27,3 +27,6 @@ echo "#!/bin/bash" | tee -a /home/minecraft/server/wrapper.sh
 echo "cd /home/minecraft/server;" | tee -a /home/minecraft/server/wrapper.sh
 echo "java -XX:MaxPermSize=1024M -Xms512M -Xmx1536M -jar spigot.jar" | tee -a /home/minecraft/server/wrapper.sh
 chmod +x /home/minecraft/server/wrapper.sh
+echo "..................................................................."
+sudo sed -i -e 's/eula=false/eula=true/g' /home/minecraft/server/eula.txt
+exit
