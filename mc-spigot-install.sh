@@ -30,3 +30,8 @@ chmod +x /home/minecraft/server/wrapper.sh
 echo "..................................................................."
 sudo sed -i -e 's/eula=false/eula=true/g' /home/minecraft/server/eula.txt
 exit
+
+sudo sed -i -e 's/exit 0/#/g' /etc/rc.local
+echo "su -l minecraft -c "screen -dmS minecraft /home/minecraft/server/wrapper.sh"" | sudo tee -a /etc/rc.local
+echo "exit 0" | sudo tee -a /etc/rc.local
+echo "Done. You should reboot now."
