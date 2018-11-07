@@ -4,7 +4,7 @@ sudo apt update
 sudo apt upgrade -y
 echo "..................................................................."
 echo "Java 9"
-sudo apt install openjdk-9-jre-headless
+sudo apt install openjdk-9-jre-headless git screen tree ranger
 echo "..................................................................."
 sudo ufw enable
 sudo ufw allow ssh
