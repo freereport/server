@@ -22,3 +22,8 @@ mkdir ../server
 cd ../server
 mv ../build/spigot-1.*.jar spigot.jar
 echo "..................................................................."
+touch /home/minecraft/server/wrapper.sh
+echo "#!/bin/bash" | tee -a /home/minecraft/server/wrapper.sh
+echo "cd /home/minecraft/server;" | tee -a /home/minecraft/server/wrapper.sh
+echo "java -XX:MaxPermSize=1024M -Xms512M -Xmx1536M -jar spigot.jar" | tee -a /home/minecraft/server/wrapper.sh
+chmod +x /home/minecraft/server/wrapper.sh
