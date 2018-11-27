@@ -131,14 +131,20 @@ read a;
 
 sudo systemctl start gunicorn.socket
 sudo systemctl enable gunicorn.socket
+sudo systemctl status gunicorn.socket
+sudo systemctl status gunicorn
+read a;
 
-echo 
-echo "server { listen 80;" >> /etc/nginx/sites-available/$PROJECT
-echo "    $DOMAINNAME;" >> /etc/nginx/sites-available/$PROJECT
-echo "    location = /favicon.ico { access_log off; log_not_found off; }" >> /etc/nginx/sites-available/$PROJECT
-echo "    location /static/ { root /home/$USER/$PROJECT; }" >> /etc/nginx/sites-available/$PROJECT
-echo "    location / { include proxy_params; proxy_pass http://unix:/run/gunicorn.sock; }}" >> /etc/nginx/sites-available/$PROJECT
-
+echo Creating /etc/nginx/sites-available/$PROJECT
+echo "server { listen 80;" >> /home/$USER/$PROJECT/$PROJECT/$PROJECT
+echo "    $DOMAINNAME;" >> /home/$USER/$PROJECT/$PROJECT/$PROJECT
+echo "    location = /favicon.ico { access_log off; log_not_found off; }" >> /home/$USER/$PROJECT/$PROJECT/$PROJECT
+echo "    location /static/ { root /home/$USER/$PROJECT; }" >> /home/$USER/$PROJECT/$PROJECT/$PROJECT
+echo "    location / { include proxy_params; proxy_pass http://unix:/run/gunicorn.sock; }}" >> /home/$USER/$PROJECT/$PROJECT/$PROJECT
+sudo mv /home/$USER/$PROJECT/$PROJECT/$PROJECT /etc/nginx/sites-available/$PROJECT
+ls -la /etc/nginx/sites-available/$PROJECT
+sudo cat /etc/nginx/sites-available/$PROJECT
+read a;
 sudo ln -s /etc/nginx/sites-available/$PROJECT /etc/nginx/sites-enabled
 
 sudo nginx -t
