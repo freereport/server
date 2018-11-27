@@ -15,7 +15,7 @@ PASSWORD=$3
 PROJECT="project_"$APPNAME
 ENV="env-"$PROJECT
 
-sudo apt update;
+sudo apt update && sudo apt upgrade -y;
 sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl -y;
 
 STRING="CREATE DATABASE "$APPNAME
@@ -45,14 +45,14 @@ sudo django-admin.py startproject $PROJECT
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost"]/g'
 sudo sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
 STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
-sudo sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
+sudo sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
 STRING='s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '$APPNAME','USER': '$USER','PASSWORD': '$PASSWORD','HOST': 'localhost','PORT': '',/g'
-sudo sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
-echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> ~/$PROJECT/$PROJECT/settings.py;
-~/$PROJECT/./manage.py makemigrations
-~/$PROJECT/./manage.py migrate
-~/$PROJECT/./manage.py createsuperuser
-~/$PROJECT/./manage.py collectstatic
+sudo sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
+echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$USER/$PROJECT/$PROJECT/settings.py;
+/home/$USER/$PROJECT/python manage.py makemigrations
+/home/$USER/$PROJECT/python manage.py migrate
+/home/$USER/$PROJECT/python manage.py createsuperuser
+/home/$USER/$PROJECT/python manage.py collectstatic
 
 sudo chown -R $USER:$USER /home/$USER/$PROJECT
 
