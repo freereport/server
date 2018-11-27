@@ -22,6 +22,7 @@ echo " "
 sudo apt update && sudo apt upgrade -y;
 sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
 
+sudo -u postgres psql postgres
 STRING="CREATE DATABASE "$APPNAME
 echo $STRING
 sudo psql -U postgres -c $STRING;
