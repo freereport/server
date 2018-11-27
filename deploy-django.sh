@@ -13,49 +13,67 @@ APPNAME=$1
 DOMAINNAME=$2
 PASSWORD=$3
 PROJECT="project_"$APPNAME
-ENV="env-"$PROJECT
-
-sudo apt update && sudo apt upgrade -y;
-sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl -y;
+echo " "
+echo $PROJECT
+echo $APPNAME
+echo $DOMAINNAME
+echo $PASSWORD
+echo " "
+sudo apt update && sudo apt upgrade -y && sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl -y;
 
 STRING="CREATE DATABASE "$APPNAME
+echo $STRING
 sudo psql -U postgres -c $STRING;
+
 STRING="CREATE USER "$USER" WITH PASSWORD "$PASSWORD
+echo $STRING
 sudo psql -U postgres -c $STRING;
+
 STRING="ALTER ROLE "$USER" SET client_encoding TO 'utf8'"
+echo $STRING
 sudo psql -U postgres -c $STRING;
+
 STRING="ALTER ROLE '$USER' SET default_transaction_isolation TO 'read committed'"
+echo $STRING
 sudo psql -U postgres -c $STRING;
+
 STRING="ALTER ROLE "$USER" SET timezone TO 'UTC'"
+echo $STRING
 sudo psql -U postgres -c $STRING;
+
 STRING="GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$USER
+echo $STRING
 sudo psql -U postgres -c $STRING;
 
 sudo -H pip3 install --upgrade pip;
 sudo -H pip3 install virtualenv;
 
+
 mkdir /home/$USER/$PROJECT
 cd /home/$USER/$PROJECT
-virtualenv $ENV
+/home/$USER/$PROJECT virtualenv env-$PROJECT
 
-sudo source /home/$USER/$PROJECT/$ENV/bin/activate
-sudo pip install django gunicorn psycopg2-binary
-sudo django-admin.py startproject $PROJECT
+source /home/$USER/$PROJECT/$ENV/bin/activate
+pip install django gunicorn psycopg2-binary
+django-admin.py startproject $PROJECT
 
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost"]/g'
-sudo sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
+sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
+
 STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
-sudo sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
+sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
+
 STRING='s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '$APPNAME','USER': '$USER','PASSWORD': '$PASSWORD','HOST': 'localhost','PORT': '',/g'
-sudo sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
+sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
+
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$USER/$PROJECT/$PROJECT/settings.py;
-/home/$USER/$PROJECT/python manage.py makemigrations
-/home/$USER/$PROJECT/python manage.py migrate
-/home/$USER/$PROJECT/python manage.py createsuperuser
-/home/$USER/$PROJECT/python manage.py collectstatic
 
-sudo chown -R $USER:$USER /home/$USER/$PROJECT
+/home/$USER/$PROJECT/$PROJECT/python manage.py makemigrations
+/home/$USER/$PROJECT/$PROJECT/python manage.py migrate
+/home/$USER/$PROJECT/$PROJECT/python manage.py createsuperuser
+/home/$USER/$PROJECT/$PROJECT/python manage.py collectstatic
 
+#sudo chown -R $USER:$USER /home/$USER/$PROJECT
 
 echo "[Unit]" >> gunicorn.socket
 echo "Description=gunicorn socket" >> gunicorn.socket
@@ -63,8 +81,10 @@ echo "[Socket]" >> gunicorn.socket
 echo "ListenStream=/run/gunicorn.sock" >> gunicorn.socket
 echo "[Install]" >> gunicorn.socket
 echo "WantedBy=sockets.target" >> gunicorn.socket
+
 sudo mv gunicorn.socket /etc/systemd/system/gunicorn.socket
 sudo chown root:root /etc/systemd/system/gunicorn.socket
+
 
 echo "[Unit]" >> gunicorn.service
 echo "Description=gunicorn daemon" >> gunicorn.service
