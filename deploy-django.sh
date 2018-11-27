@@ -12,7 +12,7 @@ PROJECT="project-"$APPNAME
 ENV="env-"$PROJECT
 
 sudo apt update;
-sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl;
+sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl -y;
 
 STRING="CREATE DATABASE "$APPNAME
 sudo psql -U postgres -c $STRING;
