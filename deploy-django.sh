@@ -55,7 +55,7 @@ cd /home/$USER/$PROJECT
 
 source /home/$USER/$PROJECT/$ENV/bin/activate
 pip install django gunicorn psycopg2-binary
-django-admin.py startproject $PROJECT
+django-admin.py startproject $PROJECT /home/$USER/$PROJECT/
 
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost"]/g'
 sed -i -e $STRING /home/$USER/$PROJECT/$PROJECT/settings.py;
@@ -83,8 +83,8 @@ echo "[Install]" >> gunicorn.socket
 echo "WantedBy=sockets.target" >> gunicorn.socket
 
 sudo mv gunicorn.socket /etc/systemd/system/gunicorn.socket
+rm gunicorn.socket
 sudo chown root:root /etc/systemd/system/gunicorn.socket
-
 
 echo "[Unit]" >> gunicorn.service
 echo "Description=gunicorn daemon" >> gunicorn.service
@@ -101,7 +101,9 @@ echo "          --bind unix:/run/gunicorn.sock \ " >> gunicorn.service
 echo "          myproject.wsgi:application" >> gunicorn.service
 echo "[Install]" >> gunicorn.service
 echo "WantedBy=multi-user.target" >> gunicorn.service
+
 sudo mv gunicorn.service /etc/systemd/system/gunicorn.service
+rm gunicorn.service
 sudo chown root:root /etc/systemd/system/gunicorn.service
 
 sudo systemctl start gunicorn.socket
