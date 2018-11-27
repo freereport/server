@@ -22,31 +22,19 @@ echo " "
 sudo apt update && sudo apt upgrade -y;
 sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
 
-sudo -u postgres psql postgres
-STRING="CREATE DATABASE "$APPNAME
-echo $STRING
-sudo psql -U postgres -c $STRING;
+echo "CREATE DATABASE "$APPNAME";" >> post.sql
+echo "CREATE USER "$USER" WITH PASSWORD '"$PASSWORD"';" >> post.sql
+echo "ALTER ROLE "$USER" SET client_encoding TO 'utf8';" >> post.sql
+echo "ALTER ROLE '$USER' SET default_transaction_isolation TO 'read committed';" >> post.sql
+echo "ALTER ROLE "$USER" SET timezone TO 'UTC';" >> post.sql
+echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$USER";" >> post.sql
+
+echo running SQL script
+cat post.sql
+sudo -u postgres psql postgres -f post.sql
 read a;
-STRING="CREATE USER "$USER" WITH PASSWORD "$PASSWORD
-echo $STRING
-sudo psql -U postgres -c $STRING;
-read a;
-STRING="ALTER ROLE "$USER" SET client_encoding TO 'utf8'"
-echo $STRING
-sudo psql -U postgres -c $STRING;
-read a;
-STRING="ALTER ROLE '$USER' SET default_transaction_isolation TO 'read committed'"
-echo $STRING
-sudo psql -U postgres -c $STRING;
-read a;
-STRING="ALTER ROLE "$USER" SET timezone TO 'UTC'"
-echo $STRING
-sudo psql -U postgres -c $STRING;
-read a;
-STRING="GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$USER
-echo $STRING
-sudo psql -U postgres -c $STRING;
-read a;
+rm post.sql
+
 echo Upgrading pip
 sudo -H pip3 install --upgrade pip;
 read a;
