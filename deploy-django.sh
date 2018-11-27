@@ -9,12 +9,10 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-
 APPNAME=$1
 DOMAINNAME=$2
 PASSWORD=$3
-USER=$APPNAME"user"
-PROJECT="project-"$APPNAME
+PROJECT="project_"$APPNAME
 ENV="env-"$PROJECT
 
 sudo apt update;
@@ -36,28 +34,28 @@ sudo psql -U postgres -c $STRING;
 sudo -H pip3 install --upgrade pip;
 sudo -H pip3 install virtualenv;
 
-sudo adduser $USER
-su $USER
-mkdir ~/$PROJECT
-cd ~/$PROJECT
+mkdir /home/$USER/$PROJECT
+cd /home/$USER/$PROJECT
 virtualenv $ENV
 
-source ~/$PROJECT/$ENV/bin/activate
-pip install django gunicorn psycopg2-binary
-django-admin.py startproject $PROJECT ~/$PROJECT
+sudo source /home/$USER/$PROJECT/$ENV/bin/activate
+sudo pip install django gunicorn psycopg2-binary
+sudo django-admin.py startproject $PROJECT
+
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost"]/g'
-sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
+sudo sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
 STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
-sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
+sudo sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
 STRING='s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '$APPNAME','USER': '$USER','PASSWORD': '$PASSWORD','HOST': 'localhost','PORT': '',/g'
-sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
+sudo sed -i -e $STRING ~/$PROJECT/$PROJECT/settings.py;
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> ~/$PROJECT/$PROJECT/settings.py;
 ~/$PROJECT/./manage.py makemigrations
 ~/$PROJECT/./manage.py migrate
 ~/$PROJECT/./manage.py createsuperuser
 ~/$PROJECT/./manage.py collectstatic
 
-exit
+sudo chown -R $USER:$USER /home/$USER/$PROJECT
+
 
 echo "[Unit]" >> gunicorn.socket
 echo "Description=gunicorn socket" >> gunicorn.socket
