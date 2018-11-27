@@ -1,8 +1,9 @@
 #!/bin/bash
 
-echo installing django app on ubuntu 18.04
-
+# create a sudo user and run it like this
 # use sudo ./deploy-django.sh <appname> <example.com> <dbpassword>
+
+echo installing django app on ubuntu 18.04
 
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
