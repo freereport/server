@@ -48,12 +48,11 @@ sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 cd /home/$SUDO_USER/$PROJECT
 echo creating env_$PROJECT
 virtualenv env_$PROJECT
+sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
 read a;
-echo activating virtual enviroment...
 source /home/$SUDO_USER/$PROJECT/env_$PROJECT/bin/activate
-echo Installing django gunicorn psycopg2-binary
 pip install django gunicorn psycopg2-binary
 echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
@@ -62,7 +61,7 @@ pwd
 ls -la
 
 echo Editing setting.py
-FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/settings.py
+FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
 
 STRINGTOFIND=ALLOWED_HOSTS = []
 STRINGTOREPL=ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]
