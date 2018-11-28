@@ -52,6 +52,7 @@ sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
 source /home/$SUDO_USER/$PROJECT/env_$PROJECT/bin/activate
+pip -V
 pip install django gunicorn psycopg2-binary
 echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
@@ -88,42 +89,38 @@ read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py collectstatic
 read a;
 sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
-echo Creating gunicorn.socket
-echo "[Unit]" > gunicorn.socket
-echo "Description=gunicorn socket" >> gunicorn.socket
-echo "[Socket]" >> gunicorn.socket
-echo "ListenStream=/run/gunicorn.sock" >> gunicorn.socket
-echo "[Install]" >> gunicorn.socket
-echo "WantedBy=sockets.target" >> gunicorn.socket
 
-sudo mv gunicorn.socket /etc/systemd/system/gunicorn.socket
-rm gunicorn.socket
-sudo chown root:root /etc/systemd/system/gunicorn.socket
+GUNICORNSOCKET=/etc/systemd/system/gunicorn.socket
+echo Creating $GUNICORNSOCKET
+echo "[Unit]" > $GUNICORNSOCKET
+echo "Description=gunicorn socket" >> $GUNICORNSOCKET
+echo "[Socket]" >> $GUNICORNSOCKET
+echo "ListenStream=/run/gunicorn.sock" >> $GUNICORNSOCKET
+echo "[Install]" >> $GUNICORNSOCKET
+echo "WantedBy=sockets.target" >> $GUNICORNSOCKET
 ls -la /etc/systemd/system/gunicorn.socket
-sudo cat /etc/systemd/system/gunicorn.socket
+cat /etc/systemd/system/gunicorn.socket
 read a;
-echo Creating gunicorn.service
-echo "[Unit]" > gunicorn.service
-echo "Description=gunicorn daemon" >> gunicorn.service
-echo "Requires=gunicorn.socket" >> gunicorn.service
-echo "After=network.target" >> gunicorn.service
-echo "[Service]" >> gunicorn.service
-echo "User="$SUDO_USER >> gunicorn.service
-echo "Group=www-data" >> gunicorn.service
-echo "WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT >> gunicorn.service
-echo "ExecStart=/home/"$SUDO_USER/$PROJECT"/"$ENV"/bin/gunicorn \ " >> gunicorn.service
-echo "          --access-logfile - \ " >> gunicorn.service
-echo "          --workers 3 \ " >> gunicorn.service
-echo "          --bind unix:/run/gunicorn.sock \ " >> gunicorn.service
-echo "          myproject.wsgi:application" >> gunicorn.service
-echo "[Install]" >> gunicorn.service
-echo "WantedBy=multi-user.target" >> gunicorn.service
 
-sudo mv gunicorn.service /etc/systemd/system/gunicorn.service
-rm gunicorn.service
-sudo chown root:root /etc/systemd/system/gunicorn.service
+GUNICORNSERVICE=/etc/systemd/system/gunicorn.service
+echo Creating $GUNICORNSERVICE
+echo "[Unit]" > $GUNICORNSERVICE
+echo "Description=gunicorn daemon" >> $GUNICORNSERVICE
+echo "Requires=gunicorn.socket" >> $GUNICORNSERVICE
+echo "After=network.target" >> $GUNICORNSERVICE
+echo "[Service]" >> $GUNICORNSERVICE
+echo "User="$SUDO_USER >> $GUNICORNSERVICE
+echo "Group=www-data" >> $GUNICORNSERVICE
+echo "WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT >> $GUNICORNSERVICE
+echo "ExecStart=/home/"$SUDO_USER/$PROJECT"/"$ENV"/bin/gunicorn \ " >> $GUNICORNSERVICE
+echo "          --access-logfile - \ " >> $GUNICORNSERVICE
+echo "          --workers 3 \ " >> $GUNICORNSERVICE
+echo "          --bind unix:/run/gunicorn.sock \ " >> $GUNICORNSERVICE
+echo "          myproject.wsgi:application" >> $GUNICORNSERVICE
+echo "[Install]" >> $GUNICORNSERVICE
+echo "WantedBy=multi-user.target" >> $GUNICORNSERVICE
 ls -la /etc/systemd/system/gunicorn.service
-sudo cat /etc/systemd/system/gunicorn.service
+cat /etc/systemd/system/gunicorn.service
 read a;
 
 sudo systemctl start gunicorn.socket
@@ -132,17 +129,18 @@ sudo systemctl status gunicorn.socket
 sudo systemctl status gunicorn
 read a;
 
-echo Creating /etc/nginx/sites-available/$PROJECT
-echo "server { listen 80;" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
-echo "    $DOMAINNAME;" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
-echo "    location = /favicon.ico { access_log off; log_not_found off; }" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
-echo "    location /static/ { root /home/$SUDO_USER/$PROJECT; }" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
-echo "    location / { include proxy_params; proxy_pass http://unix:/run/gunicorn.sock; }}" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
-sudo mv /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT /etc/nginx/sites-available/$PROJECT
-ls -la /etc/nginx/sites-available/$PROJECT
-sudo cat /etc/nginx/sites-available/$PROJECT
+NGINXAVALIABLESITES=/etc/nginx/sites-available/$PROJECT
+echo Creating $NGINXAVALIABLESITES
+echo "server { listen 80;" >> $NGINXAVALIABLESITES
+echo "    $DOMAINNAME;" >> $NGINXAVALIABLESITES
+echo "    location = /favicon.ico { access_log off; log_not_found off; }" >> $NGINXAVALIABLESITES
+echo "    location /static/ { root /home/$SUDO_USER/$PROJECT; }" >> $NGINXAVALIABLESITES
+echo "    location / { include proxy_params; proxy_pass http://unix:/run/gunicorn.sock; }}" >> $NGINXAVALIABLESITES
+ls -la $NGINXAVALIABLESITES
+cat $NGINXAVALIABLESITES
 read a;
-sudo ln -s /etc/nginx/sites-available/$PROJECT /etc/nginx/sites-enabled
+
+sudo ln -s $NGINXAVALIABLESITES /etc/nginx/sites-enabled
 
 sudo nginx -t
 sudo systemctl restart nginx
