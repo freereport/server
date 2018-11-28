@@ -17,8 +17,8 @@ IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 PROJECT="project_"$APPNAME
 
 echo installing django app on ubuntu 18.04
-sudo apt update && sudo apt upgrade -y;
-sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
+apt update && sudo apt upgrade -y;
+apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
 
 echo " "
 echo project name $PROJECT
@@ -38,6 +38,8 @@ echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$SUDO_USER";" >> /home/$SU
 cat /home/$SUDO_USER/post.sql
 sudo -u postgres psql postgres -f /home/$SUDO_USER/post.sql
 rm /home/$SUDO_USER/post.sql
+systemctl start postgresql
+systemctl enable postgresql
 
 echo Upgrading pip Installing virtualenv
 sudo -H pip3 install --upgrade pip;
@@ -56,7 +58,7 @@ pip -V
 pip install django gunicorn psycopg2-binary
 echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
-sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
+chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
 echo Editing setting.py
