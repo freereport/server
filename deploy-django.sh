@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # create a sudo user and run it like this
-# use sudo ./deploy-django.sh <sudo_user> <dbpassword> <appname> <example.com>
+# use sudo ./deploy-django.sh <dbpassword> <appname> <example.com>
+# this will use the enviroment var $LOGNAME
 
 echo installing django app on ubuntu 18.04
 
@@ -10,10 +11,9 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-USER1=$1
-PASSWORD=$2
-APPNAME=$3
-DOMAINNAME=$4
+PASSWORD=$1
+APPNAME=$2
+DOMAINNAME=$3
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 if [ -z "$DOMAINNAME" ]; then
    $DOMAINNAME=$IP
@@ -22,9 +22,10 @@ PROJECT="project_"$APPNAME
 
 echo " "
 echo $PROJECT
-echo $USER1
+echo $LOGNAME
 echo $APPNAME
 echo $DOMAINNAME
+echo $IP
 echo $PASSWORD
 echo " "
 sudo apt update && sudo apt upgrade -y;
