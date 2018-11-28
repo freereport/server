@@ -60,11 +60,11 @@ ls -la
 read a;
 
 echo Editing setting.py
-STRING='s/ALLOWED_HOSTS = [] / ALLOWED_HOSTS = [ "'
-STRING+=$DOMAINNAME'", "localhost", "'
-STRING+=$IP'"]/g'
-echo $STRING
-sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py 
+PATH=/home/$SUDO_USER/$PROJECT/$PROJECT/settings.py
+STRINGTOFIND=ALLOWED_HOSTS = []
+STRING=ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]
+echo "$STRINGTOFIND replacing with $STRING"
+sed -i "s|$STRINGTOFIND|$STRING|g" $FILENAME;
 
 STRING="s/'ENGINE': 'django.db.backends.sqlite3', / 'ENGINE': 'django.db.backends.postgresql_psycopg2',/g"
 echo $STRING
