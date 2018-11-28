@@ -62,7 +62,6 @@ ls -la
 
 echo Editing setting.py
 FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
-
 STRINGTOFIND="ALLOWED_HOSTS = []"
 STRINGTOREPL="ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
