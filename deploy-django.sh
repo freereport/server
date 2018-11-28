@@ -75,7 +75,7 @@ STRING+="','USER': '"$SUDO_USER
 STRING+="','PASSWORD': '"$PASSWORD
 STRING+="','HOST': 'localhost','PORT': '',/g"
 echo $STRING
-sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
+sed -i -e '$STRING' /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 read a;
