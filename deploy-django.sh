@@ -59,7 +59,10 @@ sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 ls -la
 read a;
 echo Editing setting.py
-STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost", '$IP']/g'
+STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ "'
+STRING+=$DOMAINNAME
+STRING+='", "localhost", "'
+STRING+=$IP'"]/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
