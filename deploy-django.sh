@@ -43,43 +43,37 @@ read a;
 
 echo Upgrading pip
 sudo -H pip3 install --upgrade pip;
-read a;
 echo Installing virtualenv
 sudo -H pip3 install virtualenv;
-read a;
-
+pwd
 mkdir /home/$SUDO_USER/$PROJECT
 cd /home/$SUDO_USER/$PROJECT
 pwd
-tree
-ls -la
 read a;
 echo creating env_$PROJECT
-/home/$SUDO_USER/$PROJECT virtualenv env_$PROJECT
-read a;
+virtualenv env_$PROJECT
 tree
 read a;
 echo activating virtual enviroment...
-source /home/$SUDO_USER/$PROJECT/$ENV/bin/activate
+source /home/$SUDO_USER/$PROJECT/env_$PROJECT/bin/activate
 read a;
 echo Installing django gunicorn psycopg2-binary
 pip install django gunicorn psycopg2-binary
-read a;
 echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
+tree
 read a;
+
 echo Editing setting.py
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost", '$IP']/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
-
 STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
-
 STRING='s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '$APPNAME','USER': '$SUDO_USER','PASSWORD': '$PASSWORD','HOST': 'localhost','PORT': '',/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
-
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 read a;
+
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py createsuperuser
