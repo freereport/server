@@ -1,13 +1,11 @@
 #!/bin/bash
 
 # create a sudo user and run it like this
-# use sudo ./deploy-django.sh <dbpassword> <appname> <example.com>
+# use sudo ./deploy-django.sh <postgres_db_password> <appname> <example.com>
 # this will use the enviroment var $LOGNAME
 
-echo installing django app on ubuntu 18.04
-
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 
+   echo "This script must be run with sudo" 
    exit 1
 fi
 
@@ -20,28 +18,29 @@ if [ -z "$DOMAINNAME" ]; then
 fi
 PROJECT="project_"$APPNAME
 
+echo installing django app on ubuntu 18.04
 echo " "
-echo $PROJECT
-echo $LOGNAME
-echo $APPNAME
-echo $DOMAINNAME
-echo $IP
+echo project name $PROJECT
+echo user $LOGNAME
+echo app name $APPNAME
+echo domain name $DOMAINNAME
+echo external ip address $IP
 echo $PASSWORD
 echo " "
 sudo apt update && sudo apt upgrade -y;
 sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
 
-echo "CREATE DATABASE "$APPNAME";" >> post.sql
-echo "CREATE USER "$LOGNAME" WITH PASSWORD '"$PASSWORD"';" >> post.sql
-echo "ALTER ROLE "$LOGNAME" SET client_encoding TO 'utf8';" >> post.sql
-echo "ALTER ROLE "$LOGNAME" SET default_transaction_isolation TO 'read committed';" >> post.sql
-echo "ALTER ROLE "$LOGNAME" SET timezone TO 'UTC';" >> post.sql
-echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$LOGNAME";" >> post.sql
+cd /home/$LOGNAME
+echo "CREATE DATABASE "$APPNAME";" >> /home/$LOGNAME/post.sql
+echo "CREATE USER "$LOGNAME" WITH PASSWORD '"$PASSWORD"';" >> /home/$LOGNAME/post.sql
+echo "ALTER ROLE "$LOGNAME" SET client_encoding TO 'utf8';" >> /home/$LOGNAME/post.sql
+echo "ALTER ROLE "$LOGNAME" SET default_transaction_isolation TO 'read committed';" >> /home/$LOGNAME/post.sql
+echo "ALTER ROLE "$LOGNAME" SET timezone TO 'UTC';" >> /home/$LOGNAME/post.sql
+echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$LOGNAME";" >> /home/$LOGNAME/post.sql
 
-echo running SQL script
-cat post.sql
+cat /home/$LOGNAME/post.sql
 sudo -u postgres psql postgres -f post.sql
-rm post.sql
+rm /home/$LOGNAME/post.sql
 read a;
 
 
