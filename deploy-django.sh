@@ -37,15 +37,14 @@ echo "ALTER ROLE "$SUDO_USER" SET default_transaction_isolation TO 'read committ
 echo "ALTER ROLE "$SUDO_USER" SET timezone TO 'UTC';" >> /home/$SUDO_USER/post.sql
 echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$SUDO_USER";" >> /home/$SUDO_USER/post.sql
 
-cat /home/$SUDO_USER/post.sql
 sudo -u postgres psql postgres -f /home/$SUDO_USER/post.sql
 rm /home/$SUDO_USER/post.sql
 systemctl start postgresql
 systemctl enable postgresql
 
 echo Upgrading pip Installing virtualenv
-pip3 install --upgrade pip;
-pip3 install virtualenv;
+pip3 install --upgrade pip
+pip3 install virtualenv
 
 mkdir /home/$SUDO_USER/$PROJECT
 chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
@@ -69,7 +68,7 @@ FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
 echo $FILENAME
 STRINGTOFIND="ALLOWED_HOSTS = []"
 STRINGTOREPL="ALLOWED_HOSTS=['"$DOMAINNAME
-STRINGTOREPL="','."$DOMAINNAME"
+STRINGTOREPL="','."$DOMAINNAME
 STRINGTOREPL+="','localhost','"$IP
 STRINGTOREPL+="']"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
