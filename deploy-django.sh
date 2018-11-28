@@ -90,7 +90,7 @@ read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py createsuperuser
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py collectstatic
 read a;
-sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
+chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 
 GUNICORNSOCKET=/etc/systemd/system/gunicorn.socket
 echo Creating $GUNICORNSOCKET
