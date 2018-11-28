@@ -44,15 +44,15 @@ systemctl start postgresql
 systemctl enable postgresql
 
 echo Upgrading pip Installing virtualenv
-sudo -H pip3 install --upgrade pip;
-sudo -H pip3 install virtualenv;
+pip3 install --upgrade pip;
+pip3 install virtualenv;
 
 mkdir /home/$SUDO_USER/$PROJECT
-sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
+chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 cd /home/$SUDO_USER/$PROJECT
 echo creating env_$PROJECT
 virtualenv env_$PROJECT
-sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
+chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
 source /home/$SUDO_USER/$PROJECT/env_$PROJECT/bin/activate
@@ -127,10 +127,10 @@ ls -la /etc/systemd/system/gunicorn.service
 cat /etc/systemd/system/gunicorn.service
 read a;
 
-sudo systemctl start gunicorn.socket
-sudo systemctl enable gunicorn.socket
-sudo systemctl status gunicorn.socket
-sudo systemctl status gunicorn
+systemctl start gunicorn.socket
+systemctl enable gunicorn.socket
+systemctl status gunicorn.socket
+systemctl status gunicorn
 read a;
 
 NGINXAVALIABLESITES=/etc/nginx/sites-available/$PROJECT
@@ -144,10 +144,10 @@ ls -la $NGINXAVALIABLESITES
 cat $NGINXAVALIABLESITES
 read a;
 
-sudo ln -s $NGINXAVALIABLESITES /etc/nginx/sites-enabled
+ln -s $NGINXAVALIABLESITES /etc/nginx/sites-enabled
 
-sudo nginx -t
-sudo systemctl restart nginx
-sudo ufw allow 'Nginx Full'
+nginx -t
+systemctl restart nginx
+ufw allow 'Nginx Full'
 echo " "
 echo ok, now go to $DOMAINNAME
