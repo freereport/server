@@ -63,7 +63,7 @@ echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
 tree
 read a;
-
+sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 echo Editing setting.py
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost", '$IP']/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
