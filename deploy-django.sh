@@ -28,7 +28,7 @@ sudo apt update && sudo apt upgrade -y;
 sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
 
 cd /home/$SUDO_USER
-echo "CREATE DATABASE "$APPNAME";" >> /home/$SUDO_USER/post.sql
+echo "CREATE DATABASE "$APPNAME";" > /home/$SUDO_USER/post.sql
 echo "CREATE USER "$SUDO_USER" WITH PASSWORD '"$PASSWORD"';" >> /home/$SUDO_USER/post.sql
 echo "ALTER ROLE "$SUDO_USER" SET client_encoding TO 'utf8';" >> /home/$SUDO_USER/post.sql
 echo "ALTER ROLE "$SUDO_USER" SET default_transaction_isolation TO 'read committed';" >> /home/$SUDO_USER/post.sql
@@ -60,17 +60,21 @@ ls -la
 read a;
 echo Editing setting.py
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ "'
-STRING+=$DOMAINNAME
-STRING+='", "localhost", "'
+STRING+=$DOMAINNAME'", "localhost", "'
 STRING+=$IP'"]/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
-STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
+
+STRING="s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g"
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
-STRING='s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '$APPNAME','USER': '$SUDO_USER','PASSWORD': '$PASSWORD','HOST': 'localhost','PORT': '',/g'
+
+STRING="s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '"$APPNAME
+STRING+="','USER': '"$SUDO_USER
+STRING+="','PASSWORD': '"$PASSWORD
+STRING+="','HOST': 'localhost','PORT': '',/g"
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
+
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 read a;
-
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py createsuperuser
@@ -78,7 +82,7 @@ read a;
 read a;
 sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 echo Creating gunicorn.socket
-echo "[Unit]" >> gunicorn.socket
+echo "[Unit]" > gunicorn.socket
 echo "Description=gunicorn socket" >> gunicorn.socket
 echo "[Socket]" >> gunicorn.socket
 echo "ListenStream=/run/gunicorn.sock" >> gunicorn.socket
@@ -92,7 +96,7 @@ ls -la /etc/systemd/system/gunicorn.socket
 sudo cat /etc/systemd/system/gunicorn.socket
 read a;
 echo Creating gunicorn.service
-echo "[Unit]" >> gunicorn.service
+echo "[Unit]" > gunicorn.service
 echo "Description=gunicorn daemon" >> gunicorn.service
 echo "Requires=gunicorn.socket" >> gunicorn.service
 echo "After=network.target" >> gunicorn.service
