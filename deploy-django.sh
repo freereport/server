@@ -5,7 +5,8 @@
 # 
 
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run with a sudo user" 
+   echo "This script must be run with a sudo user: as root run the line bellow"
+   echo "usermod -aG sudo <username>"
    exit 1
 fi
 
