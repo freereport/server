@@ -62,15 +62,18 @@ echo Editing setting.py
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ "'
 STRING+=$DOMAINNAME'", "localhost", "'
 STRING+=$IP'"]/g'
-sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
+echo $STRING
+sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py 
 
 STRING="s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g"
+echo $STRING
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 
 STRING="s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '"$APPNAME
 STRING+="','USER': '"$SUDO_USER
 STRING+="','PASSWORD': '"$PASSWORD
 STRING+="','HOST': 'localhost','PORT': '',/g"
+echo $STRING
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
