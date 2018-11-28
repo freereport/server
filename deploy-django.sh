@@ -60,10 +60,9 @@ django-admin.py startproject $PROJECT
 sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
-read a;
 
 echo Editing setting.py
-PATH=/home/$SUDO_USER/$PROJECT/$PROJECT/settings.py
+FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/settings.py
 
 STRINGTOFIND=ALLOWED_HOSTS = []
 STRINGTOREPL=ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]
@@ -80,7 +79,7 @@ STRINGTOREPL="'NAME':'"$APPNAME"','USER':'"$SUDO_USER"','PASSWORD':'"$PASSWORD"'
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
-echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
+echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> $FILENAME;
 read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
