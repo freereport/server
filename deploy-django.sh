@@ -73,7 +73,6 @@ STRINGTOREPL="','."$DOMAINNAME"
 STRINGTOREPL+="','localhost','"$IP
 STRINGTOREPL+="']"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-echo "sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME
 
 STRINGTOFIND="'ENGINE': 'django.db.backends.sqlite3'"
