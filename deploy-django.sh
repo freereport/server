@@ -18,10 +18,8 @@ PROJECT="project_"$APPNAME
 echo installing django app on ubuntu 18.04
 echo " "
 echo project name $PROJECT
-echo user $SUDO_USER
-echo app name $APPNAME
-echo domain name $DOMAINNAME
-echo external ip address $IP
+echo user $SUDO_USER - app name $APPNAME
+echo domain name $DOMAINNAME - external ip address $IP
 echo $PASSWORD
 echo " "
 sudo apt update && sudo apt upgrade -y;
@@ -60,18 +58,19 @@ sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
 read a;
+
 echo Editing setting.py
-STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ "'
+STRING='s/ALLOWED_HOSTS = [] / ALLOWED_HOSTS = [ "'
 STRING+=$DOMAINNAME'", "localhost", "'
 STRING+=$IP'"]/g'
 echo $STRING
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py 
 
-STRING="s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g"
+STRING="s/'ENGINE': 'django.db.backends.sqlite3', / 'ENGINE': 'django.db.backends.postgresql_psycopg2',/g"
 echo $STRING
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 
-STRING="s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '"$APPNAME
+STRING="s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'), / 'NAME': '"$APPNAME
 STRING+="','USER': '"$SUDO_USER
 STRING+="','PASSWORD': '"$PASSWORD
 STRING+="','HOST': 'localhost','PORT': '',/g"
