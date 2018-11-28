@@ -87,8 +87,7 @@ STRINGTOREPL+="','HOST':'localhost','PORT': ''"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e 's|$STRINGTOFIND|$STRINGREPL|g' "$FILENAME"
 
-
-echo STATIC_ROOT=os.path.join(BASE_DIR,'static/') >> $FILENAME
+echo "STATIC_ROOT=os.path.join(BASE_DIR,'static/')" >> $FILENAME
 read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
