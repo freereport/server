@@ -30,12 +30,14 @@ echo $PASSWORD
 echo " "
 
 cd /home/$SUDO_USER
-echo "CREATE DATABASE "$APPNAME";" > /home/$SUDO_USER/post.sql
-echo "CREATE USER "$SUDO_USER" WITH PASSWORD '"$PASSWORD"';" >> /home/$SUDO_USER/post.sql
-echo "ALTER ROLE "$SUDO_USER" SET client_encoding TO 'utf8';" >> /home/$SUDO_USER/post.sql
-echo "ALTER ROLE "$SUDO_USER" SET default_transaction_isolation TO 'read committed';" >> /home/$SUDO_USER/post.sql
-echo "ALTER ROLE "$SUDO_USER" SET timezone TO 'UTC';" >> /home/$SUDO_USER/post.sql
-echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$SUDO_USER";" >> /home/$SUDO_USER/post.sql
+cat > /home/$SUDO_USER/post.sql << EOF
+CREATE DATABASE "$APPNAME";
+CREATE USER "$SUDO_USER" WITH PASSWORD '"$PASSWORD"';
+ALTER ROLE "$SUDO_USER" SET client_encoding TO 'utf8';
+ALTER ROLE "$SUDO_USER" SET default_transaction_isolation TO 'read committed';
+ALTER ROLE "$SUDO_USER" SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$SUDO_USER";
+EOF
 
 sudo -u postgres psql postgres -f /home/$SUDO_USER/post.sql
 rm /home/$SUDO_USER/post.sql
