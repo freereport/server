@@ -17,14 +17,15 @@ IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 PROJECT="project_"$APPNAME
 
 echo installing django app on ubuntu 18.04
+sudo apt update && sudo apt upgrade -y;
+sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
+
 echo " "
 echo project name $PROJECT
 echo user $SUDO_USER - app name $APPNAME
 echo domain name $DOMAINNAME - external ip address $IP
 echo $PASSWORD
 echo " "
-sudo apt update && sudo apt upgrade -y;
-sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
 
 cd /home/$SUDO_USER
 echo "CREATE DATABASE "$APPNAME";" > /home/$SUDO_USER/post.sql
@@ -38,11 +39,12 @@ cat /home/$SUDO_USER/post.sql
 sudo -u postgres psql postgres -f /home/$SUDO_USER/post.sql
 rm /home/$SUDO_USER/post.sql
 
-echo Upgrading pip
+echo Upgrading pip Installing virtualenv
 sudo -H pip3 install --upgrade pip;
-echo Installing virtualenv
 sudo -H pip3 install virtualenv;
+
 mkdir /home/$SUDO_USER/$PROJECT
+sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 cd /home/$SUDO_USER/$PROJECT
 echo creating env_$PROJECT
 virtualenv env_$PROJECT
@@ -66,17 +68,17 @@ PATH=/home/$SUDO_USER/$PROJECT/$PROJECT/settings.py
 STRINGTOFIND=ALLOWED_HOSTS = []
 STRINGTOREPL=ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
 STRINGTOFIND="'ENGINE': 'django.db.backends.sqlite3'"
 STRINGTOREPL="'ENGINE': 'django.db.backends.postgresql_psycopg2'"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
 STRINGTOFIND="'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
 STRINGTOREPL="'NAME':'"$APPNAME"','USER':'"$SUDO_USER"','PASSWORD':'"$PASSWORD"','HOST':'localhost','PORT': ''"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 read a;
