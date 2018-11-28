@@ -63,7 +63,9 @@ ls -la
 echo Editing setting.py
 FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
 STRINGTOFIND="ALLOWED_HOSTS = []"
-STRINGTOREPL="ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]"
+STRINGTOREPL="ALLOWED_HOSTS=['"$DOMAINNAME
+STRINGTOREPL+="','localhost','"$IP
+STRINGTOREPL+="']"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
@@ -73,11 +75,14 @@ echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
 STRINGTOFIND="'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
-STRINGTOREPL="'NAME':'"$APPNAME"','USER':'"$SUDO_USER"','PASSWORD':'"$PASSWORD"','HOST':'localhost','PORT': ''"
+STRINGTOREPL="'NAME':'"$APPNAME
+STRINGTOREPL+="','USER':'"$SUDO_USER
+STRINGTOREPL+="','PASSWORD':'"$PASSWORD
+STRINGTOREPL+="','HOST':'localhost','PORT': ''"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
-echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> $FILENAME;
+echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py;
 read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
