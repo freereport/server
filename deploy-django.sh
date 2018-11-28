@@ -72,12 +72,12 @@ STRINGTOREPL+="','."$DOMAINNAME
 STRINGTOREPL+="','localhost','"$IP
 STRINGTOREPL+="']"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e 's|$STRINGTOFIND|$STRINGREPL|g' "$FILENAME"
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" "$FILENAME"
 
 STRINGTOFIND="'ENGINE':[ \t]'django.db.backends.sqlite3'"
 STRINGTOREPL="'ENGINE':'django.db.backends.postgresql_psycopg2'"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e 's|$STRINGTOFIND|$STRINGREPL|g' "$FILENAME"
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" "$FILENAME"
 
 STRINGTOFIND="'NAME':[ \t]os.path.join(BASE_DIR,[ \t]'db.sqlite3')
 STRINGTOREPL="'NAME':'"$APPNAME
@@ -85,7 +85,7 @@ STRINGTOREPL+="','USER':'"$SUDO_USER
 STRINGTOREPL+="','PASSWORD':'"$PASSWORD
 STRINGTOREPL+="','HOST':'localhost','PORT': ''"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e 's|$STRINGTOFIND|$STRINGREPL|g' "$FILENAME"
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" "$FILENAME"
 
 echo "STATIC_ROOT=os.path.join(BASE_DIR,'static/')" >> $FILENAME
 read a;
