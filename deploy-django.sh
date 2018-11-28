@@ -47,6 +47,7 @@ mkdir /home/$SUDO_USER/$PROJECT
 cd /home/$SUDO_USER/$PROJECT
 echo creating env_$PROJECT
 virtualenv env_$PROJECT
+pwd
 ls -la
 read a;
 echo activating virtual enviroment...
@@ -56,6 +57,7 @@ pip install django gunicorn psycopg2-binary
 echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
 sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
+pwd
 ls -la
 read a;
 echo Editing setting.py
