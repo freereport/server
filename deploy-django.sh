@@ -36,34 +36,28 @@ echo "ALTER ROLE "$SUDO_USER" SET timezone TO 'UTC';" >> /home/$SUDO_USER/post.s
 echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$SUDO_USER";" >> /home/$SUDO_USER/post.sql
 
 cat /home/$SUDO_USER/post.sql
-sudo -u postgres psql postgres -f post.sql
+sudo -u postgres psql postgres -f /home/$SUDO_USER/post.sql
 rm /home/$SUDO_USER/post.sql
-read a;
-
 
 echo Upgrading pip
 sudo -H pip3 install --upgrade pip;
 echo Installing virtualenv
 sudo -H pip3 install virtualenv;
-pwd
 mkdir /home/$SUDO_USER/$PROJECT
 cd /home/$SUDO_USER/$PROJECT
-pwd
-read a;
 echo creating env_$PROJECT
 virtualenv env_$PROJECT
-tree
+ls -la
 read a;
 echo activating virtual enviroment...
 source /home/$SUDO_USER/$PROJECT/env_$PROJECT/bin/activate
-read a;
 echo Installing django gunicorn psycopg2-binary
 pip install django gunicorn psycopg2-binary
 echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
-tree
-read a;
 sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
+ls -la
+read a;
 echo Editing setting.py
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost", '$IP']/g'
 sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
