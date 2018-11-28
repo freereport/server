@@ -51,7 +51,6 @@ virtualenv env_$PROJECT
 sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
-read a;
 source /home/$SUDO_USER/$PROJECT/env_$PROJECT/bin/activate
 pip install django gunicorn psycopg2-binary
 echo Creating django project $PROJECT
@@ -59,7 +58,6 @@ django-admin.py startproject $PROJECT
 sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
-
 echo Editing setting.py
 FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
 STRINGTOFIND="ALLOWED_HOSTS = []"
@@ -70,7 +68,7 @@ echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
 STRINGTOFIND="'ENGINE': 'django.db.backends.sqlite3'"
-STRINGTOREPL="'ENGINE': 'django.db.backends.postgresql_psycopg2'"
+STRINGTOREPL="'ENGINE':'django.db.backends.postgresql_psycopg2'"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
@@ -82,7 +80,7 @@ STRINGTOREPL+="','HOST':'localhost','PORT': ''"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
 sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
-echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py;
+echo "STATIC_ROOT=os.path.join(BASE_DIR,'static/')" >> $FILENAME;
 read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
