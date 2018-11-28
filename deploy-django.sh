@@ -63,19 +63,23 @@ django-admin.py startproject $PROJECT
 chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
+
 echo Editing setting.py
 FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
+echo $FILENAME
 STRINGTOFIND="ALLOWED_HOSTS = []"
 STRINGTOREPL="ALLOWED_HOSTS=['"$DOMAINNAME
+STRINGTOREPL="','."$DOMAINNAME"
 STRINGTOREPL+="','localhost','"$IP
 STRINGTOREPL+="']"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
+echo "sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME"
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME
 
 STRINGTOFIND="'ENGINE': 'django.db.backends.sqlite3'"
 STRINGTOREPL="'ENGINE':'django.db.backends.postgresql_psycopg2'"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME
 
 STRINGTOFIND="'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
 STRINGTOREPL="'NAME':'"$APPNAME
@@ -83,9 +87,9 @@ STRINGTOREPL+="','USER':'"$SUDO_USER
 STRINGTOREPL+="','PASSWORD':'"$PASSWORD
 STRINGTOREPL+="','HOST':'localhost','PORT': ''"
 echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
+sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME
 
-echo "STATIC_ROOT=os.path.join(BASE_DIR,'static/')" >> $FILENAME;
+echo "STATIC_ROOT=os.path.join(BASE_DIR,'static/')" >> "$FILENAME"
 read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
