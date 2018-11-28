@@ -2,7 +2,7 @@
 
 # create a sudo user and run it like this
 # use sudo ./deploy-django.sh <postgres_db_password> <appname> <example.com>
-# this will use the enviroment var $LOGNAME
+# 
 
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run with sudo" 
@@ -18,7 +18,7 @@ PROJECT="project_"$APPNAME
 echo installing django app on ubuntu 18.04
 echo " "
 echo project name $PROJECT
-echo user $LOGNAME
+echo user $SUDO_USER
 echo app name $APPNAME
 echo domain name $DOMAINNAME
 echo external ip address $IP
@@ -27,17 +27,17 @@ echo " "
 sudo apt update && sudo apt upgrade -y;
 sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
 
-cd /home/$LOGNAME
-echo "CREATE DATABASE "$APPNAME";" >> /home/$LOGNAME/post.sql
-echo "CREATE USER "$LOGNAME" WITH PASSWORD '"$PASSWORD"';" >> /home/$LOGNAME/post.sql
-echo "ALTER ROLE "$LOGNAME" SET client_encoding TO 'utf8';" >> /home/$LOGNAME/post.sql
-echo "ALTER ROLE "$LOGNAME" SET default_transaction_isolation TO 'read committed';" >> /home/$LOGNAME/post.sql
-echo "ALTER ROLE "$LOGNAME" SET timezone TO 'UTC';" >> /home/$LOGNAME/post.sql
-echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$LOGNAME";" >> /home/$LOGNAME/post.sql
+cd /home/$SUDO_USER
+echo "CREATE DATABASE "$APPNAME";" >> /home/$SUDO_USER/post.sql
+echo "CREATE USER "$SUDO_USER" WITH PASSWORD '"$PASSWORD"';" >> /home/$SUDO_USER/post.sql
+echo "ALTER ROLE "$SUDO_USER" SET client_encoding TO 'utf8';" >> /home/$SUDO_USER/post.sql
+echo "ALTER ROLE "$SUDO_USER" SET default_transaction_isolation TO 'read committed';" >> /home/$SUDO_USER/post.sql
+echo "ALTER ROLE "$SUDO_USER" SET timezone TO 'UTC';" >> /home/$SUDO_USER/post.sql
+echo "GRANT ALL PRIVILEGES ON DATABASE "$APPNAME" TO "$SUDO_USER";" >> /home/$SUDO_USER/post.sql
 
-cat /home/$LOGNAME/post.sql
+cat /home/$SUDO_USER/post.sql
 sudo -u postgres psql postgres -f post.sql
-rm /home/$LOGNAME/post.sql
+rm /home/$SUDO_USER/post.sql
 read a;
 
 
@@ -48,19 +48,19 @@ echo Installing virtualenv
 sudo -H pip3 install virtualenv;
 read a;
 
-mkdir /home/$LOGNAME/$PROJECT
-cd /home/$LOGNAME/$PROJECT
+mkdir /home/$SUDO_USER/$PROJECT
+cd /home/$SUDO_USER/$PROJECT
 pwd
 tree
 ls -la
 read a;
 echo creating env_$PROJECT
-/home/$LOGNAME/$PROJECT virtualenv env_$PROJECT
+/home/$SUDO_USER/$PROJECT virtualenv env_$PROJECT
 read a;
 tree
 read a;
 echo activating virtual enviroment...
-source /home/$LOGNAME/$PROJECT/$ENV/bin/activate
+source /home/$SUDO_USER/$PROJECT/$ENV/bin/activate
 read a;
 echo Installing django gunicorn psycopg2-binary
 pip install django gunicorn psycopg2-binary
@@ -70,22 +70,22 @@ django-admin.py startproject $PROJECT
 read a;
 echo Editing setting.py
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost", '$IP']/g'
-sed -i -e $STRING /home/$LOGNAME/$PROJECT/$PROJECT/settings.py;
+sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 
 STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
-sed -i -e $STRING /home/$LOGNAME/$PROJECT/$PROJECT/settings.py;
+sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 
-STRING='s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '$APPNAME','USER': '$LOGNAME','PASSWORD': '$PASSWORD','HOST': 'localhost','PORT': '',/g'
-sed -i -e $STRING /home/$LOGNAME/$PROJECT/$PROJECT/settings.py;
+STRING='s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),/'NAME': '$APPNAME','USER': '$SUDO_USER','PASSWORD': '$PASSWORD','HOST': 'localhost','PORT': '',/g'
+sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 
-echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$LOGNAME/$PROJECT/$PROJECT/settings.py;
+echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 read a;
-/home/$LOGNAME/$PROJECT/$PROJECT/python manage.py makemigrations
-/home/$LOGNAME/$PROJECT/$PROJECT/python manage.py migrate
-/home/$LOGNAME/$PROJECT/$PROJECT/python manage.py createsuperuser
-/home/$LOGNAME/$PROJECT/$PROJECT/python manage.py collectstatic
+/home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
+/home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
+/home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py createsuperuser
+/home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py collectstatic
 read a;
-sudo chown -R $LOGNAME:$LOGNAME /home/$LOGNAME/$PROJECT
+sudo chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 echo Creating gunicorn.socket
 echo "[Unit]" >> gunicorn.socket
 echo "Description=gunicorn socket" >> gunicorn.socket
@@ -106,10 +106,10 @@ echo "Description=gunicorn daemon" >> gunicorn.service
 echo "Requires=gunicorn.socket" >> gunicorn.service
 echo "After=network.target" >> gunicorn.service
 echo "[Service]" >> gunicorn.service
-echo "User="$LOGNAME >> gunicorn.service
+echo "User="$SUDO_USER >> gunicorn.service
 echo "Group=www-data" >> gunicorn.service
-echo "WorkingDirectory=/home/"$LOGNAME"/"$PROJECT >> gunicorn.service
-echo "ExecStart=/home/"$LOGNAME/$PROJECT"/"$ENV"/bin/gunicorn \ " >> gunicorn.service
+echo "WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT >> gunicorn.service
+echo "ExecStart=/home/"$SUDO_USER/$PROJECT"/"$ENV"/bin/gunicorn \ " >> gunicorn.service
 echo "          --access-logfile - \ " >> gunicorn.service
 echo "          --workers 3 \ " >> gunicorn.service
 echo "          --bind unix:/run/gunicorn.sock \ " >> gunicorn.service
@@ -131,12 +131,12 @@ sudo systemctl status gunicorn
 read a;
 
 echo Creating /etc/nginx/sites-available/$PROJECT
-echo "server { listen 80;" >> /home/$LOGNAME/$PROJECT/$PROJECT/$PROJECT
-echo "    $DOMAINNAME;" >> /home/$LOGNAME/$PROJECT/$PROJECT/$PROJECT
-echo "    location = /favicon.ico { access_log off; log_not_found off; }" >> /home/$LOGNAME/$PROJECT/$PROJECT/$PROJECT
-echo "    location /static/ { root /home/$LOGNAME/$PROJECT; }" >> /home/$LOGNAME/$PROJECT/$PROJECT/$PROJECT
-echo "    location / { include proxy_params; proxy_pass http://unix:/run/gunicorn.sock; }}" >> /home/$LOGNAME/$PROJECT/$PROJECT/$PROJECT
-sudo mv /home/$LOGNAME/$PROJECT/$PROJECT/$PROJECT /etc/nginx/sites-available/$PROJECT
+echo "server { listen 80;" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
+echo "    $DOMAINNAME;" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
+echo "    location = /favicon.ico { access_log off; log_not_found off; }" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
+echo "    location /static/ { root /home/$SUDO_USER/$PROJECT; }" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
+echo "    location / { include proxy_params; proxy_pass http://unix:/run/gunicorn.sock; }}" >> /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT
+sudo mv /home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT /etc/nginx/sites-available/$PROJECT
 ls -la /etc/nginx/sites-available/$PROJECT
 sudo cat /etc/nginx/sites-available/$PROJECT
 read a;
