@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # create a sudo user and run it like this
-# use sudo ./deploy-django.sh <postgres_db_password> <appname> <example.com>
+# sudo ./deploy-django.sh <postgres_db_password> <appname> <example.com>
 # 
 
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run with sudo" 
+   echo "This script must be run with a sudo user" 
    exit 1
 fi
 
@@ -61,21 +61,21 @@ read a;
 
 echo Editing setting.py
 PATH=/home/$SUDO_USER/$PROJECT/$PROJECT/settings.py
+
 STRINGTOFIND=ALLOWED_HOSTS = []
-STRING=ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]
-echo "$STRINGTOFIND replacing with $STRING"
-sed -i "s|$STRINGTOFIND|$STRING|g" $FILENAME;
+STRINGTOREPL=ALLOWED_HOSTS=["'$DOMAINNAME'","localhost","'$IP'"]
+echo "$STRINGTOFIND replacing with $STRINGTOREPL"
+sed -i "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
-STRING="s/'ENGINE': 'django.db.backends.sqlite3', / 'ENGINE': 'django.db.backends.postgresql_psycopg2',/g"
-echo $STRING
-sed -i -e $STRING /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
+STRINGTOFIND="'ENGINE': 'django.db.backends.sqlite3'"
+STRINGTOREPL="'ENGINE': 'django.db.backends.postgresql_psycopg2'"
+echo "$STRINGTOFIND replacing with $STRINGTOREPL"
+sed -i "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
-STRING="s/'NAME': os.path.join(BASE_DIR, 'db.sqlite3'), / 'NAME': '"$APPNAME
-STRING+="','USER': '"$SUDO_USER
-STRING+="','PASSWORD': '"$PASSWORD
-STRING+="','HOST': 'localhost','PORT': '',/g"
-echo $STRING
-sed -i -e '$STRING' /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
+STRINGTOFIND="'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+STRINGTOREPL="'NAME':'"$APPNAME"','USER':'"$SUDO_USER"','PASSWORD':'"$PASSWORD"','HOST':'localhost','PORT': ''"
+echo "$STRINGTOFIND replacing with $STRINGTOREPL"
+sed -i "s|$STRINGTOFIND|$STRINGREPL|g" $FILENAME;
 
 echo "STATIC_ROOT = os.path.join(BASE_DIR, 'static/')" >> /home/$SUDO_USER/$PROJECT/$PROJECT/settings.py;
 read a;
