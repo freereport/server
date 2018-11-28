@@ -13,9 +13,6 @@ PASSWORD=$1
 APPNAME=$2
 DOMAINNAME=$3
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
-if [ -z "$DOMAINNAME" ]; then
-   $DOMAINNAME=$IP
-fi
 PROJECT="project_"$APPNAME
 
 echo installing django app on ubuntu 18.04
@@ -72,7 +69,7 @@ echo Creating django project $PROJECT
 django-admin.py startproject $PROJECT
 read a;
 echo Editing setting.py
-STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost"]/g'
+STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost", '$IP']/g'
 sed -i -e $STRING /home/$LOGNAME/$PROJECT/$PROJECT/settings.py;
 
 STRING='s/'ENGINE': 'django.db.backends.sqlite3',/'ENGINE': 'django.db.backends.postgresql_psycopg2',/g'
