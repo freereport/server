@@ -50,8 +50,8 @@ read a;
 
 mkdir /home/$USER1/$PROJECT
 cd /home/$USER1/$PROJECT
-whoami
 pwd
+tree
 ls -la
 read a;
 echo creating env_$PROJECT
@@ -66,7 +66,7 @@ echo Installing django gunicorn psycopg2-binary
 pip install django gunicorn psycopg2-binary
 read a;
 echo Creating django project $PROJECT
-django-admin.py startproject $PROJECT /home/$USER1/$PROJECT/
+django-admin.py startproject $PROJECT
 read a;
 echo Editing setting.py
 STRING='s/ALLOWED_HOSTS = []/ALLOWED_HOSTS = [ '$DOMAINNAME', "localhost"]/g'
