@@ -37,7 +37,7 @@ mkdir /home/$newusername/ftp/files
 chown $newusername:$newusername /home/$newusername/ftp/files
 ls -la /home/$newusername/ftp
 echo "vsftpd test file" | sudo tee /home/$newusername/ftp/files/test.txt
-mv /etc/vsftpd.conf /etc/vsftpd.conf.orig
+mv /etc/vsftpd.conf /etc/vsftpd.conf.before$newusername
 cat > /etc/vsftpd.conf << EOF
 anonymous_enable=NO
 local_enable=YES
