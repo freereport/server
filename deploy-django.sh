@@ -23,15 +23,16 @@ REPLLINE=$3
 TEMP=$PATH1".temp"
 while read line
 do
-    if [[ $line = *"$FINDLINE"* ]]; then
-        echo ${line/$FINDLINE/$REPLLINE} >> $TEMP
+    if [[ $line = "$FINDLINE"* ]]; then
+        echo "${line/$FINDLINE/$REPLLINE}" >> $TEMP
     else
-        echo $line >> $TEMP
+        echo "$line" >> $TEMP
     fi
 done < $PATH1
 rm $PATH1
 mv $TEMP $PATH1
 }
+
 PASSWORD=$1
 APPNAME=$2
 DOMAINNAME=$3
