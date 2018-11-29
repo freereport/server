@@ -121,7 +121,7 @@ After=network.target
 [Service]
 User="$SUDO_USER"
 Group=www-data
-WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT 
+WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT"
 ExecStart=/home/"$SUDO_USER"/"$PROJECT"/"$ENV"/bin/gunicorn \ 
           --access-logfile - \ 
           --workers 3 \ 
