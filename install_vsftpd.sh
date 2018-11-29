@@ -65,5 +65,6 @@ ssl_enable=YES
 EOF
 echo "$newusername" | sudo tee -a /etc/vsftpd.userlist
 echo "restarting vsftp server..."
-sudo systemctl restart vsftpd
+systemctl restart vsftpd
+systemctl enable vsftpd
 echo "Done."
