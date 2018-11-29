@@ -92,20 +92,12 @@ echo $FILENAME
 
 replace_line_in_txt_file $FILENAME "ALLOWED_HOSTS = []" "ALLOWED_HOSTS=['"$DOMAINNAME"','."$DOMAINNAME"','localhost','"$IP"']"
 
-STRINGTOFIND="'ENGINE':[ \t]'django.db.backends.sqlite3'"
-STRINGTOREPL="'ENGINE':'django.db.backends.postgresql_psycopg2'"
-echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" "$FILENAME"
+replace_line_in_txt_file $FILENAME "'ENGINE':[ \t]'django.db.backends.sqlite3'" "'ENGINE':'django.db.backends.postgresql_psycopg2'"
 
-STRINGTOFIND="'NAME':[ \t]os.path.join(BASE_DIR,[ \t]'db.sqlite3')
-STRINGTOREPL="'NAME':'"$APPNAME
-STRINGTOREPL+="','USER':'"$SUDO_USER
-STRINGTOREPL+="','PASSWORD':'"$PASSWORD
-STRINGTOREPL+="','HOST':'localhost','PORT': ''"
-echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e "s|$STRINGTOFIND|$STRINGREPL|g" "$FILENAME"
+replace_line_in_txt_file $FILENAME "'NAME': os.path.join(BASE_DIR, 'db.sqlite3')" "'NAME':'"$APPNAME"','USER':'"$SUDO_USER"','PASSWORD':'"$PASSWORD"','HOST':'localhost','PORT': ''"
 
-echo "STATIC_ROOT=os.path.join(BASE_DIR,'static/')" >> $FILENAME
+STRING="STATIC_ROOT = os.path.join(BASE_DIR, 'static/')"
+echo $STRING >> $FILENAME
 read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
