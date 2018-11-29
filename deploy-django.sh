@@ -2,7 +2,11 @@
 #wget -O deploy-django.sh https://raw.githubusercontent.com/freereport/server/master/deploy-django.sh
 #chmod +x deploy-django.sh
 
-# create a sudo user and run it like this
+# create a sudo user as root:
+# adduser <username>
+# usermod -aG sudo <username>
+# logout and login as <username>
+# and run it like this
 # sudo ./deploy-django.sh <postgres_db_password> <appname> <example.com>
 # 
 
