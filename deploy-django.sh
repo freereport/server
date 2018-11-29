@@ -16,6 +16,26 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+function replace_line_in_txt_file()
+{
+PATH1=$1
+FINDLINE=$2
+REPLLINE=$3
+TEMP=$PATH1".temp"
+echo $PATH $FINDLINE $REPLLINE
+while read line
+do
+    if [ $line = $FINDLINE ]; then
+        echo $REPLLINE >> $TEMP
+    else
+        echo $line >> $TEMP
+    fi
+done < $PATH1
+rm $PATH1
+mv $TEMP $PATH1
+}
+
+
 PASSWORD=$1
 APPNAME=$2
 DOMAINNAME=$3
@@ -72,13 +92,8 @@ ls -la
 echo Editing setting.py
 FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
 echo $FILENAME
-STRINGTOFIND="ALLOWED_HOSTS[ \t]=[ \t][]"
-STRINGTOREPL="ALLOWED_HOSTS=['"$DOMAINNAME
-STRINGTOREPL+="','."$DOMAINNAME
-STRINGTOREPL+="','localhost','"$IP
-STRINGTOREPL+="']"
-echo "$STRINGTOFIND replacing with $STRINGTOREPL"
-sed -i -e 's|$STRINGTOFIND|$STRINGREPL|g' "$FILENAME"
+
+replace_line_in_txt_file $FILENAME "ALLOWED_HOSTS = []" "ALLOWED_HOSTS=['"$DOMAINNAME"','."$DOMAINNAME"','localhost','"$IP"']"
 
 STRINGTOFIND="'ENGINE':[ \t]'django.db.backends.sqlite3'"
 STRINGTOREPL="'ENGINE':'django.db.backends.postgresql_psycopg2'"
