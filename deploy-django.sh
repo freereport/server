@@ -16,17 +16,15 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-function replace_line_in_txt_file()
-{
+function replace_line_in_txt_file() {
 PATH1=$1
 FINDLINE=$2
 REPLLINE=$3
 TEMP=$PATH1".temp"
-echo $PATH $FINDLINE $REPLLINE
 while read line
 do
-    if [ $line = $FINDLINE ]; then
-        echo $REPLLINE >> $TEMP
+    if [[ $line = *"$FINDLINE"* ]]; then
+        echo ${line/$FINDLINE/$REPLLINE} >> $TEMP
     else
         echo $line >> $TEMP
     fi
@@ -34,8 +32,6 @@ done < $PATH1
 rm $PATH1
 mv $TEMP $PATH1
 }
-
-
 PASSWORD=$1
 APPNAME=$2
 DOMAINNAME=$3
