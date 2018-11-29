@@ -85,19 +85,13 @@ django-admin.py startproject $PROJECT
 chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 pwd
 ls -la
-
-echo Editing setting.py
 FILENAME=/home/$SUDO_USER/$PROJECT/$PROJECT/$PROJECT/settings.py
-echo $FILENAME
-
+echo Editing $FILENAME
 replace_line_in_txt_file $FILENAME "ALLOWED_HOSTS = []" "ALLOWED_HOSTS=['"$DOMAINNAME"','."$DOMAINNAME"','localhost','"$IP"']"
-
 replace_line_in_txt_file $FILENAME "'ENGINE':[ \t]'django.db.backends.sqlite3'" "'ENGINE':'django.db.backends.postgresql_psycopg2'"
-
 replace_line_in_txt_file $FILENAME "'NAME': os.path.join(BASE_DIR, 'db.sqlite3')" "'NAME':'"$APPNAME"','USER':'"$SUDO_USER"','PASSWORD':'"$PASSWORD"','HOST':'localhost','PORT': ''"
-
 STRING="STATIC_ROOT = os.path.join(BASE_DIR, 'static/')"
-echo $STRING >> $FILENAME
+echo "$STRING" | sudo tee -a $FILENAME
 read a;
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py makemigrations
 /home/$SUDO_USER/$PROJECT/$PROJECT/python manage.py migrate
@@ -115,10 +109,8 @@ ListenStream=/run/gunicorn.sock
 [Install]
 WantedBy=sockets.target
 EOF
-
 ls -la /etc/systemd/system/gunicorn.socket
 cat /etc/systemd/system/gunicorn.socket
-read a;
 
 echo Creating /etc/systemd/system/gunicorn.service
 cat > /etc/systemd/system/gunicorn.service << EOF
@@ -127,10 +119,10 @@ Description=gunicorn daemon
 Requires=gunicorn.socket
 After=network.target
 [Service]
-User="$SUDO_USER
+User="$SUDO_USER"
 Group=www-data
 WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT 
-ExecStart=/home/"$SUDO_USER/$PROJECT"/"$ENV"/bin/gunicorn \ 
+ExecStart=/home/"$SUDO_USER"/"$PROJECT"/"$ENV"/bin/gunicorn \ 
           --access-logfile - \ 
           --workers 3 \ 
           --bind unix:/run/gunicorn.sock \ 
@@ -138,17 +130,14 @@ ExecStart=/home/"$SUDO_USER/$PROJECT"/"$ENV"/bin/gunicorn \
 [Install]
 WantedBy=multi-user.target
 EOF
-
 ls -la /etc/systemd/system/gunicorn.service
 cat /etc/systemd/system/gunicorn.service
 read a;
-
 systemctl start gunicorn.socket
 systemctl enable gunicorn.socket
 systemctl status gunicorn.socket
 systemctl status gunicorn
 read a;
-
 NGINXAVALIABLESITES=/etc/nginx/sites-available/$PROJECT
 echo Creating $NGINXAVALIABLESITES
 echo "server { listen 80;" >> $NGINXAVALIABLESITES
@@ -159,9 +148,7 @@ echo "    location / { include proxy_params; proxy_pass http://unix:/run/gunicor
 ls -la $NGINXAVALIABLESITES
 cat $NGINXAVALIABLESITES
 read a;
-
 ln -s $NGINXAVALIABLESITES /etc/nginx/sites-enabled
-
 nginx -t
 systemctl restart nginx
 ufw allow 'Nginx Full'
