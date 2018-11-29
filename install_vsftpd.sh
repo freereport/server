@@ -1,64 +1,68 @@
 #!/bin/bash
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run with a sudo user: as root run the line bellow"
+   echo "usermod -aG sudo <username>"
+   exit 1
+fi
 clear
 echo "."
 echo "."
 echo "."
 echo "."
-echo ".      Installing VS_FTPD (and cofiguring)"
+echo ".      Installing VS_FTPD"
 echo "."
 echo "."
 echo "."
 echo ". press Enter to continue..."
 read
-sudo apt update
-sudo apt install vsftpd ufw -y
+apt update && apt install vsftpd ufw -y
 clear
+ufw enable
+ufw allow 22/tcp
+ufw allow 20/tcp
+ufw allow 21/tcp
+ufw allow 990/tcp
+ufw allow 40000:50000/tcp
+ufw status
 echo "Enter name of FTP user to be created: "
 read newusername
-echo "enabling and cofiguring UFW"
-sudo ufw enable
-sudo ufw allow 20/tcp
-sudo ufw allow 21/tcp
-sudo ufw allow 990/tcp
-sudo ufw allow 40000:50000/tcp
-sudo ufw status
 echo "adding user "$newusername
-sudo adduser $newusername
-sudo mkdir /home/$newusername/ftp
-sudo chown nobody:nogroup /home/$newusername/ftp
-sudo chmod a-w /home/$newusername/ftp
-sudo ls -la /home/$newusername/ftp
-sudo mkdir /home/$newusername/ftp/files
-sudo chown $newusername:$newusername /home/$newusername/ftp/files
-sudo ls -la /home/$newusername/ftp
+adduser $newusername
+mkdir /home/$newusername/ftp
+chown nobody:nogroup /home/$newusername/ftp
+chmod a-w /home/$newusername/ftp
+ls -la /home/$newusername/ftp
+mkdir /home/$newusername/ftp/files
+chown $newusername:$newusername /home/$newusername/ftp/files
+ls -la /home/$newusername/ftp
 echo "vsftpd test file" | sudo tee /home/$newusername/ftp/files/test.txt
-echo "saving the original config file: mv /etc/vsftpd.conf /etc/vsftpd.conf.orig"
-sudo mv /etc/vsftpd.conf /etc/vsftpd.conf.orig
-sudo touch /etc/vsftpd.conf
-echo "anonymous_enable=NO" | sudo tee -a /etc/vsftpd.conf
-echo "local_enable=YES" | sudo tee -a /etc/vsftpd.conf
-echo "write_enable=YES" | sudo tee -a /etc/vsftpd.conf
-echo "chroot_local_user=YES" | sudo tee -a /etc/vsftpd.conf
-echo "user_sub_token=$USER" | sudo tee -a /etc/vsftpd.conf
-echo "local_root=/home/$USER/ftp" | sudo tee -a /etc/vsftpd.conf
-echo "pasv_min_port=40000" | sudo tee -a /etc/vsftpd.conf
-echo "pasv_max_port=50000" | sudo tee -a /etc/vsftpd.conf
-echo "userlist_enable=YES" | sudo tee -a /etc/vsftpd.conf
-echo "userlist_file=/etc/vsftpd.userlist" | sudo tee -a /etc/vsftpd.conf
-echo "userlist_deny=NO" | sudo tee -a /etc/vsftpd.conf
-echo "local_umask=0002" | sudo tee -a /etc/vsftpd.conf
-echo "listen=NO" | sudo tee -a /etc/vsftpd.conf
-echo "listen_ipv6=YES" | sudo tee -a /etc/vsftpd.conf
-echo "dirmessage_enable=YES" | sudo tee -a /etc/vsftpd.conf
-echo "use_localtime=YES" | sudo tee -a /etc/vsftpd.conf
-echo "xferlog_enable=YES" | sudo tee -a /etc/vsftpd.conf
-echo "connect_from_port_20=YES" | sudo tee -a /etc/vsftpd.conf
-echo "secure_chroot_dir=/var/run/vsftpd/empty" | sudo tee -a /etc/vsftpd.conf
-echo "pam_service_name=vsftpd" | sudo tee -a /etc/vsftpd.conf
-echo "rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem" | sudo tee -a /etc/vsftpd.conf
-echo "rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key" | sudo tee -a /etc/vsftpd.conf
-echo "ssl_enable=YES" | sudo tee -a /etc/vsftpd.conf
-
+mv /etc/vsftpd.conf /etc/vsftpd.conf.orig
+cat > /etc/vsftpd.conf << EOF
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+chroot_local_user=YES
+user_sub_token=$USER
+local_root=/home/$USER/ftp
+pasv_min_port=40000
+pasv_max_port=50000
+userlist_enable=YES
+userlist_file=/etc/vsftpd.userlist
+userlist_deny=NO
+local_umask=0002
+listen=NO
+listen_ipv6=YES
+dirmessage_enable=YES
+use_localtime=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+secure_chroot_dir=/var/run/vsftpd/empty
+pam_service_name=vsftpd
+rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+ssl_enable=YES
+EOF
 echo "$newusername" | sudo tee -a /etc/vsftpd.userlist
 echo "restarting vsftp server..."
 sudo systemctl restart vsftpd
