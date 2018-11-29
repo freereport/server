@@ -17,6 +17,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 function replace_line_in_txt_file() {
+# sed can lick mah ballz
 PATH1=$1
 FINDLINE=$2
 REPLLINE=$3
@@ -42,7 +43,6 @@ PROJECT="project_"$APPNAME
 echo installing django app on ubuntu 18.04
 apt update && sudo apt upgrade -y;
 apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl tree -y;
-
 echo " "
 echo project name $PROJECT
 echo user $SUDO_USER - app name $APPNAME
@@ -106,35 +106,39 @@ read a;
 read a;
 chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/$PROJECT
 
-GUNICORNSOCKET=/etc/systemd/system/gunicorn.socket
-echo Creating $GUNICORNSOCKET
-echo "[Unit]" > $GUNICORNSOCKET
-echo "Description=gunicorn socket" >> $GUNICORNSOCKET
-echo "[Socket]" >> $GUNICORNSOCKET
-echo "ListenStream=/run/gunicorn.sock" >> $GUNICORNSOCKET
-echo "[Install]" >> $GUNICORNSOCKET
-echo "WantedBy=sockets.target" >> $GUNICORNSOCKET
+echo Creating /etc/systemd/system/gunicorn.socket
+cat > /etc/systemd/system/gunicorn.socket << EOF
+[Unit]
+Description=gunicorn socket
+[Socket]
+ListenStream=/run/gunicorn.sock
+[Install]
+WantedBy=sockets.target
+EOF
+
 ls -la /etc/systemd/system/gunicorn.socket
 cat /etc/systemd/system/gunicorn.socket
 read a;
 
-GUNICORNSERVICE=/etc/systemd/system/gunicorn.service
-echo Creating $GUNICORNSERVICE
-echo "[Unit]" > $GUNICORNSERVICE
-echo "Description=gunicorn daemon" >> $GUNICORNSERVICE
-echo "Requires=gunicorn.socket" >> $GUNICORNSERVICE
-echo "After=network.target" >> $GUNICORNSERVICE
-echo "[Service]" >> $GUNICORNSERVICE
-echo "User="$SUDO_USER >> $GUNICORNSERVICE
-echo "Group=www-data" >> $GUNICORNSERVICE
-echo "WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT >> $GUNICORNSERVICE
-echo "ExecStart=/home/"$SUDO_USER/$PROJECT"/"$ENV"/bin/gunicorn \ " >> $GUNICORNSERVICE
-echo "          --access-logfile - \ " >> $GUNICORNSERVICE
-echo "          --workers 3 \ " >> $GUNICORNSERVICE
-echo "          --bind unix:/run/gunicorn.sock \ " >> $GUNICORNSERVICE
-echo "          myproject.wsgi:application" >> $GUNICORNSERVICE
-echo "[Install]" >> $GUNICORNSERVICE
-echo "WantedBy=multi-user.target" >> $GUNICORNSERVICE
+echo Creating /etc/systemd/system/gunicorn.service
+cat > /etc/systemd/system/gunicorn.service << EOF
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+[Service]
+User="$SUDO_USER
+Group=www-data
+WorkingDirectory=/home/"$SUDO_USER"/"$PROJECT 
+ExecStart=/home/"$SUDO_USER/$PROJECT"/"$ENV"/bin/gunicorn \ 
+          --access-logfile - \ 
+          --workers 3 \ 
+          --bind unix:/run/gunicorn.sock \ 
+          myproject.wsgi:application
+[Install]
+WantedBy=multi-user.target
+EOF
+
 ls -la /etc/systemd/system/gunicorn.service
 cat /etc/systemd/system/gunicorn.service
 read a;
