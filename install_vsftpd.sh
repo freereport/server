@@ -37,7 +37,7 @@ mkdir /home/$newusername/ftp/files
 chown $newusername:$newusername /home/$newusername/ftp/files
 ls -la /home/$newusername/ftp
 echo "vsftpd test file" | sudo tee /home/$newusername/ftp/files/test.txt
-mv /etc/vsftpd.conf /etc/vsftpd.conf.before$newusername
+mv /etc/vsftpd.conf /etc/vsftpd.conf.original
 cat > /etc/vsftpd.conf << EOF
 anonymous_enable=NO
 local_enable=YES
@@ -74,7 +74,5 @@ debug_ssl=YES
 EOF
 openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
 echo "$newusername" | sudo tee -a /etc/vsftpd.userlist
-echo "restarting vsftp server..."
 systemctl restart vsftpd
 systemctl enable vsftpd
-echo "Done."
