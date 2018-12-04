@@ -70,6 +70,7 @@ ssl_sslv3=NO
 require_ssl_reuse=NO
 ssl_ciphers=HIGH
 debug_ssl=YES
+dual_log_enable=YES
 EOF
 openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
 echo "$newusername" | sudo tee -a /etc/vsftpd.userlist
