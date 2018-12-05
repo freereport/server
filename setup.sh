@@ -1,17 +1,20 @@
 #!/bin/bash
+
+
 echo "."
-sudo ufw enable;
-sudo ufw limit ssh;
+ufw enable;
+ufw limit ssh;
 
 sed -i -e 's/#force_color_prompt=yes/force_color_prompt=yes/g' ~/.bashrc;
 
-sudo sed -i -e 's/#ListenAddress 0.0.0.0/ListenAddress 0.0.0.0/g' /etc/ssh/sshd_config;
-sudo sed -i -e 's/PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config;
-sudo sed -i -e 's/PrintMotd no/PrintMotd yes/g' /etc/ssh/sshd_config;
-sudo sed -i -e 's/#Banner/Banner/g' /etc/ssh/sshd_config;
+sed -i -e 's/#ListenAddress 0.0.0.0/ListenAddress 0.0.0.0/g' /etc/ssh/sshd_config;
+sed -i -e 's/PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config;
+sed -i -e 's/PrintMotd no/PrintMotd yes/g' /etc/ssh/sshd_config;
+sed -i -e 's/#Banner/Banner/g' /etc/ssh/sshd_config;
 
-sudo echo "cat /var/log/auth.log* | grep 'Failed password' | grep sshd | awk '{print $1,$2}" | sort | uniq -c' > ~/howmanyfailed.sh;
-sudo chmod +x ~/howmanyfailed.sh;
+cat /var/log/auth.log* | grep 'Failed password' | grep sshd | awk '{print $1,$2}' | sort | uniq -c
+
+chmod +x ~/howmanyfailed.sh;
 
 echo $'set smooth\nset autoindent\nset tabsize 4\nset tabstospaces\nset const' > ~/.nanorc;
 
