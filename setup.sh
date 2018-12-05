@@ -11,6 +11,7 @@ sed -i -e 's/#ListenAddress 0.0.0.0/ListenAddress 0.0.0.0/g' /etc/ssh/sshd_confi
 sed -i -e 's/PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config;
 sed -i -e 's/PrintMotd no/PrintMotd yes/g' /etc/ssh/sshd_config;
 sed -i -e 's/#Banner/Banner/g' /etc/ssh/sshd_config;
+echo "AllowUsers $SUDO_USER" >> /etc/ssh/sshd_config;
 
 cat > ~/failed-ssh.sh << EOF
 cat /var/log/auth.log* | grep 'Failed password' | grep sshd | awk '{print (${!1@}),(${!2@})}' | sort | uniq -c
