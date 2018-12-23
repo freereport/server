@@ -52,11 +52,12 @@ do
 	BADIPS=$(egrep -v "^#|^$" $tDB)
 	for ipblock in $BADIPS
 	do
-	   $IPT -A $SPAMLIST -s $ipblock -j LOG --log-prefix "$SPAMDROPMSG"
+	   #$IPT -A $SPAMLIST -s $ipblock -j LOG --log-prefix "$SPAMDROPMSG"
 	   $IPT -A $SPAMLIST -s $ipblock -j DROP
+	   echo $ipblock can lick my balls
 	done
 done
- 
+
 # Drop everything 
 $IPT -I INPUT -j $SPAMLIST
 $IPT -I OUTPUT -j $SPAMLIST
