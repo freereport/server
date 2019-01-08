@@ -1,0 +1,9 @@
+
+# encrypt
+gpg2 -c <filename.tar.gz>
+
+# clear keys from system
+echo RELOADAGENT | gpg-connect-agent
+
+# decrypt
+gpg2 -o <outputfilename.tar.gz> -d <encryptedfilename.tar.gz.gpg>
