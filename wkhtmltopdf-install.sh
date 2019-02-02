@@ -9,8 +9,8 @@ LATESTVERSION='https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.
 WKFILE='wkhtmltox_0.12.5-1.xenial_amd64.deb'
 
 cd
-apt-get install xvfb
-wget LATESTVERSION
+apt-get install xvfb curl -y
+curl -O LATESTVERSION
 dpkg -i WKFILE
 apt-get -f install
 echo 'exec xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf "$@"' | sudo tee /usr/local/bin/wkhtmltopdf.sh >/dev/null
