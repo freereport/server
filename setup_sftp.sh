@@ -24,7 +24,7 @@ sudo chown root:root $ROOT_DIRECTORY
 sudo chmod 755 $ROOT_DIRECTORY
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 
-sudo cat > /etc/ssh/sshd_config << EOF
+sudo cat >> /etc/ssh/sshd_config << EOF
 
 # This is for sftp users
 # create sftp users with 
@@ -34,7 +34,7 @@ sudo cat > /etc/ssh/sshd_config << EOF
 Match User $SFTP_USER
 	ForceCommand internal-sftp
 	PasswordAuthentication yes
-	ChrootDirectory $ROOT_DIRECTORY$FILE_DIRECTORY
+	ChrootDirectory $ROOT_DIRECTORY
 	PermitTunnel no
 	AllowAgentForwarding no
 	AllowTcpForwarding no
