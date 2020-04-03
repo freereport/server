@@ -22,6 +22,8 @@ sudo mkdir -p $ROOT_DIRECTORY$FILE_DIRECTORY
 sudo chown $SFTP_USER:$SFTP_USER $ROOT_DIRECTORY$FILE_DIRECTORY
 sudo chown root:root $ROOT_DIRECTORY
 sudo chmod 755 $ROOT_DIRECTORY
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
 sudo cat > /etc/ssh/sshd_config << EOF
 
 # This is for sftp users
