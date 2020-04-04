@@ -12,4 +12,3 @@ logger -t ssh-wrapper $USER login from $ip
 echo "User $USER just logged in from $ip" | mail -u <yourusername> -s "SSH from $ip by $USER" <example@gmail.com>
 
 
-
