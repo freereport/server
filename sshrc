@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# reports all ssh and sftp logins on an email
+#
+# have postfix configured to internet site
+# and put this here --->  /etc/ssh/sshrc
+# 
+
+ip=`echo $SSH_CONNECTION | cut -d " " -f 1`
+
+logger -t ssh-wrapper $USER login from $ip
+echo "User $USER just logged in from $ip" | mail -u <yourusername> -s "SSH from $ip by $USER" <example@gmail.com>
+
+
+
