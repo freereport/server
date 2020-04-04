@@ -40,7 +40,6 @@ Match User $SFTP_USER
 	AllowTcpForwarding no
 	X11Forwarding no
 
-
 EOF
 sudo systemctl restart
 echo .
