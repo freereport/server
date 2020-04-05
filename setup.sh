@@ -24,7 +24,7 @@ apt update && apt upgrade -y && apt autoclean && apt autoremove -y
 EOF
 chmod +x ~/up.sh
 
-echo $'set smooth\nset autoindent\nset tabsize 4\nset tabstospaces\nset const' > ~/.nanorc;
+echo $'set smooth\nset autoindent\nset tabsize 4\nset tabstospaces\nset constantshow' > ~/.nanorc;
 
 apt install nmap netcat tmux htop tree ranger figlet #acpi network-manager ffmpeg wifite
 echo "nmtiu" > ~/wifi && chmod +x ~/wifi;
