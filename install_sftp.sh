@@ -7,21 +7,29 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-sudo apt install openssh-server -y
+#sudo apt install openssh-server -y
+clear
+echo " "
+echo " "
+echo "Creating Group sftpuser"
+echo " "
+echo " "
+echo " "
+sudo groupadd sftpuser
+echo " "
+echo " "
+echo root directory /var/sftp
+sudo mkdir /var/sftp
+sudo chown root:root /var/sftp
+sudo chmod 755 /var/sftp
+ls -la /var/sftp
 
-SFTP_USER="sftpuser"
-ROOT_DIRECTORY="/var/sftp"
-FILE_DIRECTORY="/files"
+echo creating /var/sftp/public
+sudo mkdir /var/sftp/public
+sudo chown nobody:sftpuser /var/sftp/public
+sudo chmod -R 2775 /var/sftp/public
+ls -la /var/sftp
 
-echo setting up sftpd
-echo creating user $SFTP_USER
-echo root directory $ROOT_DIRECTORY
-echo file directory $ROOT_DIRECTORY$FILE_DIRECTORY
-sudo adduser --shell /bin/false $SFTP_USER
-sudo mkdir -p $ROOT_DIRECTORY$FILE_DIRECTORY
-sudo chown $SFTP_USER:$SFTP_USER $ROOT_DIRECTORY$FILE_DIRECTORY
-sudo chown root:root $ROOT_DIRECTORY
-sudo chmod 755 $ROOT_DIRECTORY
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 
 sudo cat >> /etc/ssh/sshd_config << EOF
@@ -31,16 +39,24 @@ sudo cat >> /etc/ssh/sshd_config << EOF
 # sudo adduser --shell /bin/false <username>
 # and add <username> bellow
 
-Match User $SFTP_USER
+Match Group sftpuser
 	ForceCommand internal-sftp
 	PasswordAuthentication yes
-	ChrootDirectory $ROOT_DIRECTORY
+	ChrootDirectory /var/sftp
 	PermitTunnel no
 	AllowAgentForwarding no
 	AllowTcpForwarding no
 	X11Forwarding no
 
 EOF
-sudo systemctl restart
+sudo systemctl restart ssh
+
+echo "Create New sftp only username : "
+read SFTP_USER
+sudo adduser --shell /bin/false $SFTP_USER
+sudo mkdir /var/sftp/$SFTP_USER
+sudo chown $SFTP_USER:$SFTP_USER /var/sftp/$SFTP_USER
+sudo chmod 700 /var/sftp/$SFTP_USER
+
 echo .
 echo done.
