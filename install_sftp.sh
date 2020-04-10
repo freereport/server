@@ -54,6 +54,7 @@ sudo systemctl restart ssh
 echo "Create New sftp only username : "
 read SFTP_USER
 sudo adduser --shell /bin/false $SFTP_USER
+sudo usermod -aG sftpuser $SFTP_USER
 sudo mkdir /var/sftp/$SFTP_USER
 sudo chown $SFTP_USER:$SFTP_USER /var/sftp/$SFTP_USER
 sudo chmod 700 /var/sftp/$SFTP_USER
