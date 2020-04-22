@@ -25,6 +25,9 @@ echo "..................................................................."
 touch /home/minecraft/server/wrapper.sh
 echo "#!/bin/bash" | tee -a /home/minecraft/server/wrapper.sh
 echo "cd /home/minecraft/server;" | tee -a /home/minecraft/server/wrapper.sh
+
+totalmemoryMB=$(expr $(free|awk '/^Mem:/{print $2}') / 1024)
+
 echo "java -XX:MaxPermSize=1024M -Xms512M -Xmx1536M -jar spigot.jar" | tee -a /home/minecraft/server/wrapper.sh
 chmod +x /home/minecraft/server/wrapper.sh
 echo "..................................................................."
