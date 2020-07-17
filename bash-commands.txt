@@ -1,0 +1,40 @@
+users 
+  logged users
+
+groups
+  groups being used
+
+cat /etc/group
+  list all groups
+
+who
+
+w
+
+wall
+  write to all - to finish do ^d
+
+write (user) pts/(number from who command)
+  write to a user - to finish do ^d
+
+lastlog
+
+sudo passwd -l (user)
+  locks acc
+  
+sudo passwd -u (user)
+  unlocks acc
+
+sudo adduser (newuser)
+
+sudo adduser (existinguser) (group)
+  to add user to group
+  
+sudo deluser (user)
+
+sudo deluser (user) (group)
+  removes user from group
+
+sudo addgroup (newgroup)
+
+sudo delgroup (group)
